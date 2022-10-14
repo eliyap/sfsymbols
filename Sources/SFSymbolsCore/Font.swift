@@ -66,8 +66,10 @@ public struct Font {
     }
     
     internal init?(url: URL, descriptor: Descriptor) {
+        print("Trying URL \(url)")
         guard let provider = CGDataProvider(url: url as CFURL) else { return nil }
         guard let cgFont = CGFont(provider) else { return nil }
+        print("URL succeeded.")
         
         let attributes = [
             kCTFontTraitsAttribute: [
@@ -107,10 +109,22 @@ private func CTFontCopyDecodedSYMPData(_ font: CTFont) -> Data? {
     }
     
     let tag = fourCharCode("symp")
-    guard let data = CTFontCopyTable(font, tag, []) else { return nil }
-    guard let base64String = String(data: data as Data, encoding: .utf8) else { return nil }
-    guard let encoded = NSData(base64Encoded: base64String) else { return nil }
-    guard let decoded = NSMutableData(length: encoded.length) else { return nil }
+    guard let data = CTFontCopyTable(font, tag, []) else {
+        print("CTFontCopyTable failed")
+        return nil
+    }
+    guard let base64String = String(data: data as Data, encoding: .utf8) else {
+        print("String failed")
+        return nil
+    }
+    guard let encoded = NSData(base64Encoded: base64String) else {
+        print("NSData failed")
+        return nil
+    }
+    guard let decoded = NSMutableData(length: encoded.length) else {
+        print("NSMutableData failed")
+        return nil
+    }
     
     var key: Array<UInt8> = [0xB8, 0x85, 0xF6, 0x9E, 0x39, 0x8C, 0xBA, 0x72, 0x40, 0xDB, 0x49, 0x6B, 0xE8, 0xC6, 0x14, 0x88, 0x54, 0x9F, 0x1F, 0x88, 0x5D, 0x47, 0x6B, 0x2E, 0x2C, 0xC1, 0x14, 0xF1, 0x3B, 0x17, 0x21, 0x20]
     var iv: Array<UInt8> = [0xEF, 0xB0, 0xD1, 0x2E, 0xFA, 0xC5, 0x91, 0x14, 0xC3, 0xE5, 0xB9, 0x12, 0x70, 0xF0, 0xC0, 0x46]

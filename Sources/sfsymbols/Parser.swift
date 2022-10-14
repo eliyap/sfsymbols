@@ -16,7 +16,9 @@ struct Configuration {
     let font: Font
 
     func run() throws {
+        print("here")
         try exporter.exportGlyphs(in: font, using: exportOptions)
+        print("there")
     }
 
 }
@@ -29,44 +31,38 @@ struct SFSymbols: ParsableCommand {
     @Option(help: "A path to the SFSymbols ttf file. If omitted, the font will be located in a copy of SF Symbols.app")
     var fontFile: String?
 
-    @Option(default: Font.Family(rawValue: "Pro"),
-            help: "The family of SF font to use",
+    @Option(help: "The family of SF font to use",
             transform: toFontFamily)
-    var fontFamily: Font.Family
+    var fontFamily: Font.Family = Font.Family(rawValue: "Pro")!
 
-    @Option(default: Font.Variant(rawValue: "Display"),
-            help: "The family of SF font to use",
+    @Option(help: "The family of SF font to use",
             transform: toFontVariant)
-    var fontVariant: Font.Variant
+    var fontVariant: Font.Variant = Font.Variant(rawValue: "Display")!
 
-    @Option(default: Font.Weight.regular,
-            help: "The weight of the SFSymbols font to use",
+    @Option(help: "The weight of the SFSymbols font to use",
             transform: toFontWeight)
-    var fontWeight: Font.Weight
+    var fontWeight: Font.Weight = Font.Weight.regular
 
-    @Option(default: 44, help: "The size of symbol to use.")
-    var fontSize: Int
+    @Option(help: "The size of symbol to use.")
+    var fontSize: Int = 44
 
-    @Option(default: Glyph.Size(rawValue: "medium"),
-            help: "The size of symbol to use",
+    @Option(help: "The size of symbol to use",
             transform: toGlyphSize)
-    var symbolSize: Glyph.Size
+    var symbolSize: Glyph.Size = Glyph.Size(rawValue: "medium")!
+            
 
-    @Option(default: "*",
-            help: "A pattern to limit which symbols are exported. Example: '*.fill' or '*cloud*'")
-    var symbolName: String
+    @Option(help: "A pattern to limit which symbols are exported. Example: '*.fill' or '*cloud*'")
+    var symbolName: String = "*"
 
-    @Option(default: ExportFormat(rawValue: "svg"),
-            help: "The formatter to use when exporting",
+    @Option(help: "The formatter to use when exporting",
             transform: toExportFormat)
-    var format: ExportFormat
+    var format: ExportFormat = ExportFormat(rawValue: "svg")!
 
-    @Option(default: ".",
-            help: "A path to the folder where symbols will be exported.")
-    var output: String
+    @Option(help: "A path to the folder where symbols will be exported.")
+    var output: String = "."
 
-    @Flag(help: "Log verbose information about how exporting is proceeding")
-    var verbose: Bool
+    // @Flag(help: "Log verbose information about how exporting is proceeding")
+    var verbose: Bool = false
 
     func constructConfiguration() throws -> Configuration {
         let exportOptions = ExportOptions(
@@ -86,9 +82,10 @@ struct SFSymbols: ParsableCommand {
         }
         guard let font = Font.bestFontMatching(url: overrideFontPath,
                                                descriptor: fontDescriptor) else {
+            print("Unable to locate suitable SF Symbols font")
             throw ArgumentParserError.fontLocationString("Unable to locate suitable SF Symbols font")
         }
-
+        
         let configuration = Configuration(exportOptions: exportOptions, exporter: format.exporter, font: font)
         return configuration
     }
