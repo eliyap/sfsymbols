@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import CoreGraphics
+import CoreText
 
 public struct Glyph {
     
